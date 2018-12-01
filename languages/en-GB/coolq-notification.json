@@ -11,5 +11,5 @@
 	"post-at": "Categories need to @ all",
 	"topics-only": "Notify for new topics only",
 	"template": "Notifications template",
-	"template-htlp": "{username}、{category}、{title}、{content}、{url}"
+	"template-help": "{username}、{category}、{title}、{content}、{url}"
 }
