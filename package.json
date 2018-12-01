@@ -1,7 +1,7 @@
 {
   "name": "nodebb-plugin-coolq-notification",
   "title": "Coolq Notifications for NodeBB",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Send notifications of new posts and topics via coolq http api.",
   "keywords": [
     "coolq",
