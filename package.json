@@ -1,31 +1,27 @@
 {
-  "name": "nodebb-plugin-discord-notification",
-  "title": "Discord Notifications for NodeBB",
-  "version": "1.4.0",
-  "description": "Send notifications of new posts and topics via Discord webhook.",
+  "name": "nodebb-plugin-coolq-notification",
+  "title": "Coolq Notifications for NodeBB",
+  "version": "0.0.1",
+  "description": "Send notifications of new posts and topics via coolq http api.",
   "keywords": [
-    "discord",
+    "coolq",
     "nodebb",
     "plugin",
-    "webhook",
     "notifications"
   ],
   "author": {
-    "name": "Amargon",
-    "url": "https://github.com/amargon/"
+    "name": "XDUSA-Computer-Department",
+    "url": "https://github.com/XDUSA-Computer-Department"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/amargon/nodebb-plugin-discord-notification"
+    "url": "https://github.com/XDUSA-Computer-Department/nodebb-plugin-coolq-notification"
   },
   "bugs": {
-    "url": "https://github.com/amargon/nodebb-plugin-discord-notification/issues"
+    "url": "https://github.com/XDUSA-Computer-Department/nodebb-plugin-coolq-notification/issues"
   },
   "license": "MIT",
   "main": "library.js",
-  "dependencies": {
-    "discord.js": "^11.1.0"
-  },
   "nbbpm": {
     "compatibility": "^1.5.0"
   }

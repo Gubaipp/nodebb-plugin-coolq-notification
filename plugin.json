@@ -1,8 +1,8 @@
 {
-	"id": "nodebb-plugin-discord-notification",
-	"name": "Discord Notifications for NodeBB",
-	"description": "Send notifications of new posts and topics via Discord webhook.",
-	"url": "https://github.com/amargon/nodebb-plugin-discord-notification",
+	"id": "nodebb-plugin-coolq-notification",
+	"name": "Coolq Notifications for NodeBB",
+	"description": "Send notifications of new posts and topics via coolq http api.",
+	"url": "https://github.com/XDUSA-Computer-Department/nodebb-plugin-coolq-notification",
 	"library": "./library.js",
 	"hooks": [
 		{ "hook": "static:app.load", "method": "init" },
@@ -11,5 +11,5 @@
 	],
 	"templates": "./public/templates",
 	"languages": "./languages",
-	"settingsRoute": "/admin/plugins/discord-notification"
+	"settingsRoute": "/admin/plugins/coolq-notification"
 }
