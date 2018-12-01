@@ -1,0 +1,15 @@
+{
+	"title": "Coolq Notifications",
+	"webhook": "Webhook",
+	"webhook-url": "URL",
+	"webhook-help": "Coolq http api url, https://cqhttp.cc/docs/4.6/#/API",
+	"webhook-group": "QQ Group",
+	"notification": "Notifications",
+	"notification-max-length": "Maximum Quote Length",
+	"notification-max-length-help": "Up to 1024 characters",
+	"post-categories": "Categories",
+	"post-at": "Categories need to @ all",
+	"topics-only": "Notify for new topics only",
+	"template": "Notifications template",
+	"template-htlp": "{username}、{category}、{title}、{content}、{url}"
+}

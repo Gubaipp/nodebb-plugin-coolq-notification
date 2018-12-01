@@ -1,4 +1,4 @@
-(function(module) {
+(function (module) {
 	'use strict';
 
 	var User = module.parent.require('./user');
@@ -8,109 +8,104 @@
 	var meta = module.parent.require('./meta');
 	var nconf = module.parent.require('nconf');
 	var async = module.parent.require('async');
+	var request = require('request');
 
-	var Discord = require('discord.js');
-
-	var hook = null;
 	var forumURL = nconf.get('url');
 
 	var plugin = {
-			config: {
-				webhookURL: '',
-				maxLength: '',
-				postCategories: '',
-				topicsOnly: '',
-				messageContent: ''
-			},
-			regex: /https:\/\/discordapp\.com\/api\/webhooks\/([0-9]+?)\/(.+?)$/
-		};
+		config: {
+			webhookURL: '',
+			webhookGroup: '',
+			maxLength: '',
+			postCategories: '',
+			postAt: '',
+			topicsOnly: '',
+			template: ''
+		},
+	};
 
-	plugin.init = function(params, callback) {
-		function render(req, res, next) {
-			res.render('admin/plugins/discord-notification', {});
-		}
-
-		params.router.get('/admin/plugins/discord-notification', params.middleware.admin.buildHeader, render);
-		params.router.get('/api/admin/plugins/discord-notification', render);
-
-		meta.settings.get('discord-notification', function(err, settings) {
-			for (var prop in plugin.config) {
-				if (settings.hasOwnProperty(prop)) {
-					plugin.config[prop] = settings[prop];
-				}
+	plugin.init = function (params, callback) {
+			function render(req, res, next) {
+				res.render('admin/plugins/coolq-notification', {});
 			}
 
-			// Parse Webhook URL (1: ID, 2: Token)
-			var match = plugin.config['webhookURL'].match(plugin.regex);
+			params.router.get('/admin/plugins/coolq-notification', params.middleware.admin.buildHeader, render);
+			params.router.get('/api/admin/plugins/coolq-notification', render);
 
-			if (match) {
-				hook = new Discord.WebhookClient(match[1], match[2]);
-			}
-		});
-
-		callback();
-	},
-
-	plugin.postSave = function(post) {
-		post = post.post;
-		var topicsOnly = plugin.config['topicsOnly'] || 'off';
-
-		if (topicsOnly === 'off' || (topicsOnly === 'on' && post.isMain)) {
-			var content = post.content;
-
-			async.parallel({
-				user: function(callback) {
-					User.getUserFields(post.uid, ['username', 'picture'], callback);
-				},
-				topic: function(callback) {
-					Topics.getTopicFields(post.tid, ['title', 'slug'], callback);
-				},
-				category: function(callback) {
-					Categories.getCategoryFields(post.cid, ['name', 'bgColor'], callback);
-				}
-			}, function(err, data) {
-				var categories = JSON.parse(plugin.config['postCategories']);
-
-				if (!categories || categories.indexOf(String(post.cid)) >= 0) {
-					// Trim long posts:
-					var maxQuoteLength = plugin.config['maxLength'] || 1024;
-					if (content.length > maxQuoteLength) { content = content.substring(0, maxQuoteLength) + '...'; }
-
-					// Ensure absolute thumbnail URL:
-					var thumbnail = data.user.picture.match(/^\//) ? forumURL + data.user.picture : data.user.picture;
-
-					// Add custom message:
-					var messageContent = plugin.config['messageContent'] || '';
-
-					// Make the rich embed:
-					var embed = new Discord.RichEmbed()
-						.setColor(data.category.bgColor)
-						.setURL(forumURL + '/topic/' + data.topic.slug)
-						.setTitle(data.category.name + ': ' + data.topic.title)
-						.setDescription(content)
-						.setFooter(data.user.username, thumbnail)
-						.setTimestamp();
-
-					// Send notification:
-					if (hook) {
-						hook.sendMessage(messageContent, {embeds: [embed]}).catch(console.error);
+			meta.settings.get('coolq-notification', function (err, settings) {
+				for (var prop in plugin.config) {
+					if (settings.hasOwnProperty(prop)) {
+						plugin.config[prop] = settings[prop];
 					}
 				}
 			});
-		}
-	},
 
-	plugin.adminMenu = function(headers, callback) {
-		translator.translate('[[discord-notification:title]]', function(title) {
-			headers.plugins.push({
-				route : '/plugins/discord-notification',
-				icon  : 'fa-bell',
-				name  : title
+			callback();
+		},
+
+		plugin.postSave = function (post) {
+			post = post.post;
+			var topicsOnly = plugin.config['topicsOnly'] || 'off';
+
+			if (topicsOnly === 'off' || (topicsOnly === 'on' && post.isMain)) {
+				var content = post.content;
+
+				async.parallel({
+					user: function (callback) {
+						User.getUserFields(post.uid, ['username'], callback);
+					},
+					topic: function (callback) {
+						Topics.getTopicFields(post.tid, ['title', 'slug'], callback);
+					},
+					category: function(callback) {
+						Categories.getCategoryFields(post.cid, ['name'], callback);
+					}
+				}, function (err, data) {
+					var categories = JSON.parse(plugin.config['postCategories']);
+					var at = JSON.parse(plugin.config['postAt']);
+
+					if (categories.length === 0 || categories.indexOf(String(post.cid)) >= 0) {
+						// Trim long posts:
+						var maxQuoteLength = plugin.config['maxLength'] || 1024;
+						if (content.length > maxQuoteLength) {
+							content = content.substring(0, maxQuoteLength) + '...';
+						}
+						if (maxQuoteLength === 0) content = '';
+
+						var message = at.indexOf(String(post.cid)) >= 0 ? [{type: 'at', data: {qq: 'all'}}, {type: 'text', data: {text: ' '}}] : [];
+						var messageText = plugin.config['template'];
+						messageText = messageText.replace(/\{username\}/g, data.user.username);
+						messageText = messageText.replace(/\{category\}/g, data.category.name);
+						messageText = messageText.replace(/\{title\}/g, data.topic.title);
+						messageText = messageText.replace(/\{content\}/g, content);
+						messageText = messageText.replace(/\{url\}/g, encodeURI(forumURL + '/topic/' + data.topic.slug));
+						message.push({type: 'text', data: {text: messageText}});
+
+						if (plugin.config['webhookURL'] && plugin.config['webhookGroup']) {
+							request.post(plugin.config['webhookURL'], {
+								json: true,
+								body: {
+									group_id: plugin.config['webhookGroup'],
+									message: message
+								}
+							});
+						}
+					}
+				});
+			}
+		},
+
+		plugin.adminMenu = function (headers, callback) {
+			translator.translate('[[coolq-notification:title]]', function (title) {
+				headers.plugins.push({
+					route: '/plugins/coolq-notification',
+					icon: 'fa-bell',
+					name: title
+				});
+
+				callback(null, headers);
 			});
-
-			callback(null, headers);
-		});
-	};
+		};
 
 	module.exports = plugin;
 
