@@ -8,6 +8,10 @@
 				<p class="help-block">[[coolq-notification:webhook-help]]</p>
 			</div>
 			<div class="form-group">
+				<label for="webhookToken">[[coolq-notification:webhook-token]]</label>
+				<input type="text" class="form-control" id="webhookToken" name="webhookToken" />
+			</div>
+			<div class="form-group">
 				<label for="webhookGroup">[[coolq-notification:webhook-group]]</label>
 				<input type="number" class="form-control" id="webhookGroup" name="webhookGroup" />
 			</div>

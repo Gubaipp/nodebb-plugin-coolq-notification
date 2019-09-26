@@ -15,6 +15,7 @@
 	var plugin = {
 		config: {
 			webhookURL: '',
+			webhookToken: '',
 			webhookGroup: '',
 			maxLength: '',
 			postCategories: '',
@@ -84,6 +85,9 @@
 						if (plugin.config['webhookURL'] && plugin.config['webhookGroup']) {
 							request.post(plugin.config['webhookURL'], {
 								json: true,
+								headers: plugin.config['webhookToken'] !== '' ? {
+									'Authorization': `Bearer ${plugin.config['webhookToken']}`
+								} : {},
 								body: {
 									group_id: plugin.config['webhookGroup'],
 									message: message

@@ -2,7 +2,7 @@
 	"id": "nodebb-plugin-coolq-notification",
 	"name": "Coolq Notifications for NodeBB",
 	"description": "Send notifications of new posts and topics via coolq http api.",
-	"url": "https://github.com/XDUSA-Computer-Department/nodebb-plugin-coolq-notification",
+	"url": "https://github.com/XDMYstery/nodebb-plugin-coolq-notification",
 	"library": "./library.js",
 	"hooks": [
 		{ "hook": "static:app.load", "method": "init" },
